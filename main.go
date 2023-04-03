@@ -6,13 +6,44 @@ import (
 
 func main() {
 	client := con.Connector()
-	docs := []interface{}{
-		con.Tea{Type: "Masala", Rating: 10, Vendor: []string{"A", "C"}},
-		con.Tea{Type: "English Breakfast", Rating: 6},
-		con.Tea{Type: "Oolong", Rating: 7, Vendor: []string{"C"}},
-		con.Tea{Type: "Assam", Rating: 5},
-		con.Tea{Type: "Earl Grey", Rating: 8, Vendor: []string{"A", "B"}},
+	r := []interface{}{
+		Restaurant{
+			ID:           901,
+			Name:         "dlshjs",
+			RestaurantId: "sdkjb",
+			Cuisine:      "chinese",
+			Address:      []any{"sdalkh", "sajhs", 90},
+			Borough:      "kjsabdkbb",
+			Grades: []any{
+				"afk",
+				90,
+				"alkdhl",
+			},
+		},
+		Restaurant{
+			ID:           902,
+			Name:         "dlshjs",
+			RestaurantId: "sdkjb",
+			Cuisine:      "chinese",
+			Address:      []any{"sdalkh", "sajhs", 90},
+			Borough:      "kjsabdkbb",
+			Grades: []any{
+				"afk",
+				90,
+				"alkdhl",
+			},
+		},
 	}
-	con.Insertion(client, docs, "test", "test")
 
+	con.Insertion(client, r, "test", "test")
+}
+
+type Restaurant struct {
+	ID           int `bson:"_id"`
+	Name         string
+	RestaurantId string `bson:"restaurant_id"`
+	Cuisine      string
+	Address      interface{}
+	Borough      string
+	Grades       []interface{}
 }
