@@ -1,45 +1,35 @@
 package main
 
 import (
+	"context"
+	"fmt"
+
 	con "test/functions"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
 	client := con.Connector()
-	r := []interface{}{
-		Restaurant{
-			ID:           901,
-			Name:         "dlshjs",
-			RestaurantId: "sdkjb",
-			Cuisine:      "chinese",
-			Address:      []any{"sdalkh", "sajhs", 90},
-			Borough:      "kjsabdkbb",
-			Grades: []any{
-				"afk",
-				90,
-				"alkdhl",
-			},
-		},
-		Restaurant{
-			ID:           902,
-			Name:         "dlshjs",
-			RestaurantId: "sdkjb",
-			Cuisine:      "chinese",
-			Address:      []any{"sdalkh", "sajhs", 90},
-			Borough:      "kjsabdkbb",
-			Grades: []any{
-				"afk",
-				90,
-				"alkdhl",
-			},
-		},
+	coll := client.Database("test").Collection("restaurants")
+	filter := bson.D{{Key: "cuisine", Value: "American "}}
+	var result Restaurant
+	err := coll.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// This error means your query did not match any documents.
+			fmt.Println("prog ends")
+			return
+		}
+		panic(err)
 	}
-
-	con.Insertion(client, r, "test", "test")
+	fmt.Println(result)
 }
 
 type Restaurant struct {
-	ID           int `bson:"_id"`
+	ID           primitive.ObjectID `bson:"_id"`
 	Name         string
 	RestaurantId string `bson:"restaurant_id"`
 	Cuisine      string
