@@ -38,5 +38,6 @@ import (
 //		Grades       []interface{}
 //	}
 func main() {
-	con.Main()
+	con.Routingfun()
+
 }

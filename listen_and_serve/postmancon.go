@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	con "test/functions"
+	con "test/dbfunctions"
 
 	"github.com/gorilla/mux"
 )

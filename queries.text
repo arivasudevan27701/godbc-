@@ -1,0 +1,2 @@
+m := bson.M{"_id": "175094", "ticketHistory": bson.D{{"$elemMatch": bson.D{{"updatedBy", "r.ramanathan+3@netxd.com"}}}}}
+bson.M{"_id": "175094", "ticketHistory": bson.M{"$elemMatch": bson.D{{Key: "updatedBy", Value: "r.ramanathan+3@netxd.com"}}}}

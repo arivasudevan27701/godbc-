@@ -1,84 +1,20 @@
 package cbwbackend
 
 import (
-	"encoding/json"
-	"io"
-	"log"
 	"net/http"
-	con "test/functions"
 
 	"github.com/gorilla/mux"
 )
 
-func Mugfunc2(w http.ResponseWriter, r *http.Request) {
-	res := result{}
-	b := true
-	byt, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Println("ReadAll Error:", err)
-	}
-	var p Transaction
-
-	// log.Println("Body :", string(byt))
-	w.Header().Set("Content-Type", "application/json")
-	json.Unmarshal(byt, &p)
-	client := con.Connector()
-	var i []interface{}
-	i = append(i, p)
-
-	if b && p.Params.Api.Credential != "Basic YXJpdmFzdWRldmFuLnMrNkBuZXR4ZC5jb206NzEyMGY0NWFmM2ZjNGIxMGJhOGUzYjY2YTQ5YzBlMGU==" {
-		json.NewEncoder(w).Encode("invalid credential")
-		res.Params.Api.Credential = "error in validatiing credenetial"
-		b = false
-
-	}
-	if b && p.Params.Api.Apikey != "7120f45af3fjh45h72h6f8rg0h4j3e" {
-		json.NewEncoder(w).Encode("error in api key !!!!")
-		res.Params.Api.Apikey = "error in validatiing credenetial API KEY"
-		b = false
-
-	}
-	if b && p.Params.Payload.Channel != "ACH_IN" {
-		json.NewEncoder(w).Encode("Invalid Transaction")
-		res.Params.Channel = "Channel Not Found"
-		b = false
-	}
-	if b && p.Params.Payload.Creditor.Identification != "200542309118191" {
-		json.NewEncoder(w).Encode("error in finding the account")
-		res.Params.Creditor.Identification = "creditor idedntification not found"
-		b = false
-	}
-	ref := p.Params.Payload.Refno
-	b2, err2 := con.Find(client, ref, "test", "postman")
-	if err2 != nil {
-		json.NewEncoder(w).Encode(err2)
-	}
-	if b && b2 {
-		json.NewEncoder(w).Encode("Duplicate ref no")
-		res.Params.Refno = "duplicate ref no"
-		b = false
-	}
-
-	if b {
-		res.id = 10001
-		json.NewEncoder(w).Encode(p)
-		_, err = con.Insertion(client, i, "test", "postman")
-		if err != nil {
-			json.NewEncoder(w).Encode(err)
-		}
-	} else {
-		json.NewEncoder(w).Encode(res)
-	}
-
-}
-func Main() {
+func Routingfun() {
 	router := mux.NewRouter()
-	router.HandleFunc("/Insertion", Mugfunc2)
+	router.HandleFunc("/Insertion", Validator)
+	router.HandleFunc("/Update", Updator)
 	http.ListenAndServe(":4000", router)
 
 }
 
-type result struct {
+type Result struct {
 	id     int
 	Method string
 	Params struct {
@@ -97,24 +33,24 @@ type result struct {
 }
 
 type Transaction struct {
-	Method string `json:"method"`
+	Method string `json:"method,omitempty"`
 	Params struct {
 		Payload struct {
-			Channel string `json:"channel"`
-			Typec   string `json:"transactionType"`
-			Refno   string `json:"reference"`
+			Channel string `json:"channel,omitempty"`
+			Typec   string `json:"transactionType,omitempty"`
+			Refno   string `json:"reference,omitempty"`
 			Amnt    struct {
-				Amount string `json:"amount"`
-			} `json:"transactionAmount"`
+				Amount string `json:"amount,omitempty"`
+			} `json:"transactionAmount,omitempty"`
 			Creditor struct {
-				Identification     string `json:"identification"`
-				Identificationtype string `json:"identificationtype"`
-			} `json:"creditorAccount"`
-		} `json:"payload"`
+				Identification     string `json:"identification,omitempty"`
+				Identificationtype string `json:"identificationtype,omitempty"`
+			} `json:"creditorAccount,omitempty"`
+		} `json:"payload,omitempty"`
 		Api struct {
-			Credential string `json:"credential"`
-			Apikey     string `json:"apiKey"`
-			Sig        string `json:"signature"`
-		} `json:"api"`
-	} `json:"params"`
+			Credential string `json:"credential,omitempty"`
+			Apikey     string `json:"apiKey,omitempty"`
+			Sig        string `json:"signature,omitempty"`
+		} `json:"api,omitempty"`
+	} `json:"params,omitempty"`
 }
